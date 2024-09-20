@@ -3,17 +3,19 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 class StringCalculator {
 public:
-    int addNumbers(const std::string& input); // Main function to add numbers
+    int add(const std::string& numbers);
 
 private:
-    std::string findDelimiter(const std::string& input); // No conditionals here
-    std::string replaceNewlines(const std::string& input, const std::string& delimiter); // No conditionals here
-    std::vector<int> splitIntoNumbers(const std::string& input, char delimiter); // No conditionals here
-    void checkForNegativeNumbers(const std::vector<int>& numbers); // No conditionals here
-    int sumValidNumbers(const std::vector<int>& numbers); // No conditionals here
+    std::string extractDelimiter(std::string& numbers);
+    std::string replaceNewlines(const std::string& numbers, const std::string& delimiter);
+    std::vector<int> parseNumbers(const std::string& input, const std::string& delimiter);
+    void handleNegatives(const std::vector<int>& numbers);
+    int sumValidNumbers(const std::vector<int>& numbers);
+    bool isGreaterThanLimit(int number, int limit);
 };
 
 #endif // STRINGCALCULATOR_H
