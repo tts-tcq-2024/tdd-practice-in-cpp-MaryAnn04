@@ -13,17 +13,7 @@ int StringCalculator::add(const std::string& numbers) {
     std::string delimiter = extractDelimiter(input);
 
     std::string normalizedInput = replaceNewlines(input, delimiter);
-    std::vector<int> nums;
-
-    // Directly parse numbers in add function
-    std::istringstream ss(normalizedInput);
-    std::string token;
-
-    while (std::getline(ss, token, delimiter[0])) {
-        if (!token.empty()) {
-            nums.push_back(std::stoi(token));
-        }
-    }
+    std::vector<int> nums = parseNumbers(normalizedInput, delimiter);
 
     handleNegatives(nums);
     
@@ -44,6 +34,25 @@ std::string StringCalculator::replaceNewlines(const std::string& numbers, const 
     std::string result = numbers;
     std::replace(result.begin(), result.end(), '\n', delimiter[0]);
     return result;
+}
+
+std::vector<int> StringCalculator::parseNumbers(const std::string& input, const std::string& delimiter) {
+    std::vector<int> tokens;
+    size_t start = 0;
+    size_t end = input.find(delimiter);
+
+    auto addToken = [&tokens, &input](size_t start, size_t length) {
+        tokens.push_back(std::stoi(input.substr(start, length)));
+    };
+
+    while (end != std::string::npos) {
+        addToken(start, end - start);
+        start = end + delimiter.length();
+        end = input.find(delimiter, start);
+    }
+
+    addToken(start, end);  // Add the last token
+    return tokens;
 }
 
 void StringCalculator::handleNegatives(const std::vector<int>& numbers) {
