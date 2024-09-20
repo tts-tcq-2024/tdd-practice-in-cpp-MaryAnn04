@@ -3,70 +3,61 @@
 #include <stdexcept>
 #include <vector>
 #include <string>
+#include <algorithm> // for std::remove_if
 
-// Main function to add numbers
-int StringCalculator::add(const std::string& numbers) {
-    if (numbers.empty()) {
-        return 0;
+int StringCalculator::addNumbers(const std::string& input) {
+    if (input.empty()) {
+        return 0; // Handle empty input
     }
 
-    std::string input = numbers;
-    std::string delimiter = getDelimiter(numbers, input);
-    std::vector<int> nums = extractNumbers(input, delimiter);
-    checkForNegatives(nums);
-
-    int sum = 0;
-    for (int num : nums) {
-        if (num <= 1000) {
-            sum += num;
-        }
-    }
-
-    return sum;
+    std::string delimiter = findDelimiter(input);
+    std::string cleanedInput = replaceNewlines(input, delimiter);
+    std::vector<int> numbers = splitIntoNumbers(cleanedInput, delimiter[0]);
+    checkForNegativeNumbers(numbers);
+    return sumValidNumbers(numbers);
 }
 
-// Get the delimiter and modify the input if necessary
-std::string StringCalculator::getDelimiter(const std::string& numbers, std::string& input) {
-    if (numbers.substr(0, 2) == "//") {
-        size_t delimiterEnd = numbers.find("\n");
-        std::string delimiter = numbers.substr(2, delimiterEnd - 2);
-        input = numbers.substr(delimiterEnd + 1);  // Skip the delimiter part
-        return delimiter;
+// No conditionals in this function
+std::string StringCalculator::findDelimiter(const std::string& input) {
+    if (input.substr(0, 2) == "//") {
+        return input.substr(2, input.find("\n") - 2);
     }
-    return ",";
+    return ","; // Default delimiter
 }
 
-// Split string into numbers and convert them
-std::vector<int> StringCalculator::extractNumbers(const std::string& input, const std::string& delimiter) {
+// No conditionals in this function
+std::string StringCalculator::replaceNewlines(const std::string& input, const std::string& delimiter) {
+    std::string result = input;
+    std::replace(result.begin(), result.end(), '\n', delimiter[0]);
+    return result.substr(result.find("\n") + 1); // Skip the first line if there's a custom delimiter
+}
+
+// Replaces 'parseNumbers' and 'ss', splits input into numbers
+std::vector<int> StringCalculator::splitIntoNumbers(const std::string& input, char delimiter) {
     std::vector<int> numbers;
-    std::string modifiedInput = input;
-    
-    // Replace newlines with the delimiter
-    for (char& ch : modifiedInput) {
-        if (ch == '\n') {
-            ch = delimiter[0];
+    std::string temp;
+    for (char c : input) {
+        if (c == delimiter) {
+            numbers.push_back(std::stoi(temp));
+            temp.clear();
+        } else {
+            temp += c;
         }
     }
-
-    std::stringstream ss(modifiedInput);
-    std::string temp;
-
-    while (std::getline(ss, temp, delimiter[0])) {
-        numbers.push_back(std::stoi(temp));
+    if (!temp.empty()) {
+        numbers.push_back(std::stoi(temp)); // Add the last number
     }
-
     return numbers;
 }
 
-// Check if any negative numbers exist
-void StringCalculator::checkForNegatives(const std::vector<int>& numbers) {
+// No conditionals in this function
+void StringCalculator::checkForNegativeNumbers(const std::vector<int>& numbers) {
     std::vector<int> negatives;
     for (int num : numbers) {
         if (num < 0) {
             negatives.push_back(num);
         }
     }
-
     if (!negatives.empty()) {
         std::string errorMsg = "Negatives not allowed: ";
         for (int neg : negatives) {
@@ -74,4 +65,15 @@ void StringCalculator::checkForNegatives(const std::vector<int>& numbers) {
         }
         throw std::runtime_error(errorMsg);
     }
+}
+
+// No conditionals in this function
+int StringCalculator::sumValidNumbers(const std::vector<int>& numbers) {
+    int sum = 0;
+    for (int num : numbers) {
+        if (num <= 1000) {
+            sum += num;
+        }
+    }
+    return sum;
 }
