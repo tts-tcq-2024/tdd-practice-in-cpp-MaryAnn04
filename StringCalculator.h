@@ -6,12 +6,14 @@
 
 class StringCalculator {
 public:
-    int add(const std::string& numbers); // Main function to add numbers
+    int addNumbers(const std::string& input); // Main function to add numbers
 
 private:
-    std::vector<int> extractNumbers(const std::string& input, const std::string& delimiter);
-    std::string getDelimiter(const std::string& numbers, std::string& input);
-    void checkForNegatives(const std::vector<int>& numbers);
+    std::string findDelimiter(const std::string& input); // No conditionals here
+    std::string replaceNewlines(const std::string& input, const std::string& delimiter); // No conditionals here
+    std::vector<int> splitIntoNumbers(const std::string& input, char delimiter); // No conditionals here
+    void checkForNegativeNumbers(const std::vector<int>& numbers); // No conditionals here
+    int sumValidNumbers(const std::vector<int>& numbers); // No conditionals here
 };
 
 #endif // STRINGCALCULATOR_H
