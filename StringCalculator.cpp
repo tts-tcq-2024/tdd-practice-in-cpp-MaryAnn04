@@ -32,7 +32,6 @@ std::string StringCalculator::replaceNewlines(const std::string& input, const st
     return result.substr(result.find("\n") + 1); // Skip the first line if there's a custom delimiter
 }
 
-// Replaces 'parseNumbers' and 'ss', splits input into numbers
 std::vector<int> StringCalculator::splitIntoNumbers(const std::string& input, char delimiter) {
     std::vector<int> numbers;
     std::string temp;
@@ -50,7 +49,7 @@ std::vector<int> StringCalculator::splitIntoNumbers(const std::string& input, ch
     return numbers;
 }
 
-// No conditionals in this function
+// No conditionals in this fun
 void StringCalculator::checkForNegativeNumbers(const std::vector<int>& numbers) {
     std::vector<int> negatives;
     for (int num : numbers) {
