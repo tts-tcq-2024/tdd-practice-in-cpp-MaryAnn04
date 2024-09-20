@@ -1,78 +1,76 @@
 #include "StringCalculator.h"
+#include <algorithm>
+#include <numeric>
 #include <sstream>
-#include <stdexcept>
-#include <vector>
-#include <string>
-#include <algorithm> // for std::remove_if
+#include <functional>
 
-int StringCalculator::addNumbers(const std::string& input) {
-    if (input.empty()) {
-        return 0; // Handle empty input
+int StringCalculator::add(const std::string& numbers) {
+    if (numbers.empty()) {
+        return 0;
     }
 
-    std::string delimiter = findDelimiter(input);
-    std::string cleanedInput = replaceNewlines(input, delimiter);
-    std::vector<int> numbers = splitIntoNumbers(cleanedInput, delimiter[0]);
-    checkForNegativeNumbers(numbers);
-    return sumValidNumbers(numbers);
-}
+    std::string input = numbers;
+    std::string delimiter = extractDelimiter(input);
 
-// No conditionals in this function
-std::string StringCalculator::findDelimiter(const std::string& input) {
-    if (input.substr(0, 2) == "//") {
-        return input.substr(2, input.find("\n") - 2);
+    std::string normalizedInput = replaceNewlines(input, delimiter);
+    std::vector<int> nums;
+
+    // Directly parse numbers in add function
+    std::istringstream ss(normalizedInput);
+    std::string token;
+
+    while (std::getline(ss, token, delimiter[0])) {
+        if (!token.empty()) {
+            nums.push_back(std::stoi(token));
+        }
     }
-    return ","; // Default delimiter
+
+    handleNegatives(nums);
+    
+    return sumValidNumbers(nums);
 }
 
-// No conditionals in this function
-std::string StringCalculator::replaceNewlines(const std::string& input, const std::string& delimiter) {
-    std::string result = input;
+std::string StringCalculator::extractDelimiter(std::string& numbers) {
+    if (numbers.substr(0, 2) == "//") {
+        size_t delimiterEndPos = numbers.find("\n");
+        std::string delimiter = numbers.substr(2, delimiterEndPos - 2);  // Extract delimiter
+        numbers = numbers.substr(delimiterEndPos + 1);  // Update input to remove delimiter declaration
+        return delimiter;
+    }
+    return ",";  // Default delimiter
+}
+
+std::string StringCalculator::replaceNewlines(const std::string& numbers, const std::string& delimiter) {
+    std::string result = numbers;
     std::replace(result.begin(), result.end(), '\n', delimiter[0]);
-    return result.substr(result.find("\n") + 1); // Skip the first line if there's a custom delimiter
+    return result;
 }
 
-std::vector<int> StringCalculator::splitIntoNumbers(const std::string& input, char delimiter) {
-    std::vector<int> numbers;
-    std::string temp;
-    for (char c : input) {
-        if (c == delimiter) {
-            numbers.push_back(std::stoi(temp));
-            temp.clear();
-        } else {
-            temp += c;
-        }
-    }
-    if (!temp.empty()) {
-        numbers.push_back(std::stoi(temp)); // Add the last number
-    }
-    return numbers;
-}
-
-// No conditionals in this fun
-void StringCalculator::checkForNegativeNumbers(const std::vector<int>& numbers) {
+void StringCalculator::handleNegatives(const std::vector<int>& numbers) {
     std::vector<int> negatives;
-    for (int num : numbers) {
-        if (num < 0) {
-            negatives.push_back(num);
-        }
-    }
+    std::copy_if(numbers.begin(), numbers.end(), std::back_inserter(negatives), [](int num) { return num < 0; });
+
     if (!negatives.empty()) {
-        std::string errorMsg = "Negatives not allowed: ";
+        std::string errorMessage = "negatives not allowed: ";
         for (int neg : negatives) {
-            errorMsg += std::to_string(neg) + " ";
+            errorMessage += std::to_string(neg) + " ";
         }
-        throw std::runtime_error(errorMsg);
+        throw std::runtime_error(errorMessage);
     }
 }
 
-// No conditionals in this function
 int StringCalculator::sumValidNumbers(const std::vector<int>& numbers) {
     int sum = 0;
-    for (int num : numbers) {
-        if (num <= 1000) {
+
+    std::for_each(numbers.begin(), numbers.end(), [&sum, this](int num) {
+        if (!isGreaterThanLimit(num, 1000)) {
             sum += num;
         }
-    }
+    });
+
     return sum;
+}
+
+bool StringCalculator::isGreaterThanLimit(int number, int limit) {
+    return number > limit;
 }
