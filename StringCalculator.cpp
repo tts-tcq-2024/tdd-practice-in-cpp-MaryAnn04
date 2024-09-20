@@ -1,85 +1,54 @@
 #include "StringCalculator.h"
-#include <algorithm>
-#include <numeric>
 #include <sstream>
-#include <functional>
+#include <stdexcept>
+#include <vector>
+#include <string>
 
 int StringCalculator::add(const std::string& numbers) {
     if (numbers.empty()) {
         return 0;
     }
 
+    std::string delimiter = ",";
     std::string input = numbers;
-    std::string delimiter = extractDelimiter(input);
-
-    std::string normalizedInput = replaceNewlines(input, delimiter);
-    std::vector<int> nums = parseNumbers(normalizedInput, delimiter);
-
-    handleNegatives(nums);
     
-    return sumValidNumbers(nums);
-}
-
-std::string StringCalculator::extractDelimiter(std::string& numbers) {
+    // Custom delimiter case
     if (numbers.substr(0, 2) == "//") {
-        size_t delimiterEndPos = numbers.find("\n");
-        std::string delimiter = numbers.substr(2, delimiterEndPos - 2);  // Extract delimiter
-        numbers = numbers.substr(delimiterEndPos + 1);  // Update input to remove delimiter declaration
-        return delimiter;
+        size_t delimiterEnd = numbers.find("\n");
+        delimiter = numbers.substr(2, delimiterEnd - 2);
+        input = numbers.substr(delimiterEnd + 1);
     }
-    return ",";  // Default delimiter
-}
-
-std::string StringCalculator::replaceNewlines(const std::string& numbers, const std::string& delimiter) {
-    std::string result = numbers;
-    std::replace(result.begin(), result.end(), '\n', delimiter[0]);
-    return result;
-}
-
-std::vector<int> StringCalculator::parseNumbers(const std::string& input, const std::string& delimiter) {
-    std::vector<int> tokens;
-    size_t start = 0;
-    size_t end = input.find(delimiter);
-
-    auto addToken = [&tokens, &input](size_t start, size_t length) {
-        tokens.push_back(std::stoi(input.substr(start, length)));
-    };
-
-    while (end != std::string::npos) {
-        addToken(start, end - start);
-        start = end + delimiter.length();
-        end = input.find(delimiter, start);
-    }
-
-    addToken(start, end);  // Add the last token
-    return tokens;
-}
-
-void StringCalculator::handleNegatives(const std::vector<int>& numbers) {
-    std::vector<int> negatives;
-    std::copy_if(numbers.begin(), numbers.end(), std::back_inserter(negatives), [](int num) { return num < 0; });
-
-    if (!negatives.empty()) {
-        std::string errorMessage = "negatives not allowed: ";
-        for (int neg : negatives) {
-            errorMessage += std::to_string(neg) + " ";
+    
+    // Replace newline with the delimiter
+    for (char& ch : input) {
+        if (ch == '\n') {
+            ch = delimiter[0];
         }
-        throw std::runtime_error(errorMessage);
     }
-}
 
-int StringCalculator::sumValidNumbers(const std::vector<int>& numbers) {
+    // Split input based on delimiter and sum the numbers
+    std::vector<int> nums;
+    std::stringstream ss(input);
+    std::string temp;
     int sum = 0;
-
-    std::for_each(numbers.begin(), numbers.end(), [&sum, this](int num) {
-        if (!isGreaterThanLimit(num, 1000)) {
+    std::vector<int> negatives;
+    
+    while (std::getline(ss, temp, delimiter[0])) {
+        int num = std::stoi(temp);
+        if (num < 0) {
+            negatives.push_back(num);
+        } else if (num <= 1000) {
             sum += num;
         }
-    });
+    }
+
+    if (!negatives.empty()) {
+        std::string errorMsg = "Negatives not allowed: ";
+        for (int neg : negatives) {
+            errorMsg += std::to_string(neg) + " ";
+        }
+        throw std::runtime_error(errorMsg);
+    }
 
     return sum;
-}
-
-bool StringCalculator::isGreaterThanLimit(int number, int limit) {
-    return number > limit;
 }
