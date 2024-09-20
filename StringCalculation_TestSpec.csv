@@ -1,0 +1,12 @@
+Test Case ID,Test Name,Purpose,Input,Expected Output
+TC1,ExpectZeroForEmptyInput,Verify that an empty input string returns a sum of 0.,"""""",0
+TC2,ExpectZeroForSingleZero,"Verify that the input string ""0"" returns a sum of 0.","""0""",0
+TC3,ExpectSumForTwoNumbers,"Verify that the input string ""1,2"" returns a sum of 3.","""1,2""",3
+TC4,ExpectExceptionForNegativeNumbers,"Verify that the input string ""-1,2"" throws a runtime error.","""-1,2""","""Runtime Error"""
+TC5,ExpectSumWithNewlineDelimiter,"Verify that the input string ""1\n2,3"" returns a sum of 6 after removing the newline delimiter.","""1\n2,3""",6
+TC6,IgnoreNumbersGreaterThan1000,"Verify that the input string ""1,1001"" returns a sum of 1, ignoring numbers greater than 1000.","""1,1001""",1
+TC7,ExpectSumWithCustomDelimiter,"Verify that the input string ""//;\n1;2"" returns a sum of 3 after removing custom delimiters.","""//;\n1;2""",3
+TC8,ExpectSumWithMultiCharacterDelimiter,"Verify that the input string ""//[]\n12***3"" returns a sum of 6 with a custom multi-char delimiter.","""//[***]\n1***2***3""",6
+TC9,ExpectExceptionForMultipleNegativeNumbers,"Verify that the input string ""-1,-2,3"" throws a runtime error with all negatives listed.","""-1,-2,3""","""Run time Error """
+TC10,IgnoreMultipleNumbersGreaterThan1000,"Verify that the input string ""1001,2,1002"" returns a sum of 2, ignoring all numbers over 1000.","""1001,2,1002""",2
+TC11,ExpectSumWithNewlineAndComma,"Verify that the input string ""1\n2,3"" returns a sum of 6 with mixed delimiters.","""1\n2,3""",6
