@@ -10,17 +10,17 @@ int StringCalculator::add(const std::string& numbers) {
     }
 
     std::string input = numbers;
-    std::string delimiter = extractDelimiter(input);
+    std::string delimiter = ExtractDelimiter(input);
 
     std::string Inputs = ReplaceNewlines(input, delimiter);
     std::vector<int> nums = ExtractingNumbers(Inputs, delimiter);
 
-    handleNegatives(nums);
+    Negatives(nums);
     
-    return sumValidNumbers(nums);
+    return SumValidNumbers(nums);
 }
 
-std::string StringCalculator::extractDelimiter(std::string& numbers) {
+std::string StringCalculator::ExtractDelimiter(std::string& numbers) {
     if (numbers.substr(0, 2) == "//") {
         size_t delimiterEndPos = numbers.find("\n");
         std::string delimiter = numbers.substr(2, delimiterEndPos - 2);  
@@ -55,7 +55,7 @@ std::vector<int> StringCalculator::ExtractingNumbers(const std::string& input, c
     return tokens;
 }
 
-void StringCalculator::handleNegatives(const std::vector<int>& numbers) {
+void StringCalculator::Negatives(const std::vector<int>& numbers) {
     std::vector<int> negatives;
     std::copy_if(numbers.begin(), numbers.end(), std::back_inserter(negatives), [](int num) { return num < 0; });
 
@@ -68,7 +68,7 @@ void StringCalculator::handleNegatives(const std::vector<int>& numbers) {
     }
 }
 
-int StringCalculator::sumValidNumbers(const std::vector<int>& numbers) {
+int StringCalculator::SumValidNumbers(const std::vector<int>& numbers) {
     int sum = 0;
 
     std::for_each(numbers.begin(), numbers.end(), [&sum, this](int num) {
