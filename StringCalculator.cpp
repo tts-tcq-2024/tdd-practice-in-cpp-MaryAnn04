@@ -12,8 +12,8 @@ int StringCalculator::add(const std::string& numbers) {
     std::string input = numbers;
     std::string delimiter = extractDelimiter(input);
 
-    std::string normalizedInput = replaceNewlines(input, delimiter);
-    std::vector<int> nums = parseNumbers(normalizedInput, delimiter);
+    std::string normalizedInput = ReplaceNewlines(input, delimiter);
+    std::vector<int> nums = ExtractingNumbers(Input, delimiter);
 
     handleNegatives(nums);
     
@@ -30,13 +30,13 @@ std::string StringCalculator::extractDelimiter(std::string& numbers) {
     return ",";  // Default delimiter
 }
 
-std::string StringCalculator::replaceNewlines(const std::string& numbers, const std::string& delimiter) {
+std::string StringCalculator::ReplaceNewlines(const std::string& numbers, const std::string& delimiter) {
     std::string result = numbers;
     std::replace(result.begin(), result.end(), '\n', delimiter[0]);
     return result;
 }
 
-std::vector<int> StringCalculator::parseNumbers(const std::string& input, const std::string& delimiter) {
+std::vector<int> StringCalculator::ExtractingNumbers(const std::string& input, const std::string& delimiter) {
     std::vector<int> tokens;
     size_t start = 0;
     size_t end = input.find(delimiter);
